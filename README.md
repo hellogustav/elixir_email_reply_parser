@@ -1,6 +1,6 @@
 # ElixirEmailReplyParser
 
-**TODO: Add description**
+An Elixir port of https://github.com/zapier/email-reply-parser
 
 ## Installation
 
