@@ -7,12 +7,15 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   test "test_simple_body" do
-    {:ok, message} = get_email('email_1_1')
+    email_message = get_email('email_1_1')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+    assert length(fragments) === 3
+    for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
   end
 
 
   defp get_email(name) do
-    {:ok, content} = File.open("test/emails/#{name}.txt")
+    {:ok, content} = File.read("test/emails/#{name}.txt")
     ElixirEmailReplyParser.read(content)
   end
 
