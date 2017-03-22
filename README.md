@@ -1,6 +1,7 @@
 # ElixirEmailReplyParser
 
-An Elixir port of https://github.com/zapier/email-reply-parser
+An Elixir port of https://github.com/github/email_reply_parser
+as well as (especially) its port  of https://github.com/zapier/email-reply-parser
 
 ## Installation
 
@@ -16,4 +17,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/elixir_email_reply_parser](https://hexdocs.pm/elixir_email_reply_parser).
-
