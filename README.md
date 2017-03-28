@@ -1,5 +1,7 @@
 # ElixirEmailReplyParser
 
+[![Build Status](https://travis-ci.org/hellogustav/elixir_email_reply_parser.svg?branch=master)](https://travis-ci.org/hellogustav/elixir_email_reply_parser)
+
 An Elixir port of https://github.com/github/email_reply_parser
 as well as (especially) its port  of https://github.com/zapier/email-reply-parser
 
