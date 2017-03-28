@@ -68,7 +68,7 @@ defmodule ElixirEmailReplyParser.Parser do
     String.trim(s) === ""
   end
 
-  defp scan_line(fragments, _found_visible, nil, []), do: {:ok, fragments}
+  defp scan_line(fragments, _found_visible, nil, []), do: {:ok, Enum.reverse(fragments)}
 
   defp scan_line(fragments, found_visible, fragment, []) do
     if (fragment) do
