@@ -11,6 +11,12 @@ defmodule ElixirEmailReplyParserTest do
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) === 3
     for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
+
+    assert (for fragment <- fragments, do: fragment.signature) === [false, true, true]
+    assert (for fragment <- fragments, do: fragment.hidden) === [false, true, true]
+
+    assert (String.contains?(Enum.at(fragments, 0).content, "folks" ))
+    assert (String.contains?(Enum.at(fragments, 2).content, "riak-users"))
   end
 
 
