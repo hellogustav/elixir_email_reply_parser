@@ -58,7 +58,20 @@ defmodule ElixirEmailReplyParser.Parser do
     # at least two newline characters.
     text = Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, text, "\\1\n")
     lines = String.split(text, "\n")
-    fragments = for line <- lines, do: %ElixirEmailReplyParser.Fragment{content: "#{line}"}
-    %ElixirEmailReplyParser.EmailMessage{fragments: fragments}
+    lines = Enum.reverse(lines)
+    {:ok, fragments} = scan_line([], nil, lines)
+
+    %ElixirEmailReplyParser.EmailMessage{fragments: Enum.reverse(fragments)}
+  end
+
+  defp scan_line(fragments, nil, []), do: {:ok, fragments}
+
+  defp scan_line(fragments, nil, [line | lines]) do
+    fragment = %ElixirEmailReplyParser.Fragment{content: "#{line}"}
+    scan_line([fragment | fragments], nil, lines)
+  end
+
+  defp scan_line(fragments, fragment, lines) do
+    scan_line([fragment | fragments], nil, lines)
   end
 end
