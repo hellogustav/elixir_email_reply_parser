@@ -100,6 +100,12 @@ defmodule ElixirEmailReplyParserTest do
   end
 
 
+  test "test_reply_from_gmail" do
+    content = get_email_content('email_gmail')
+
+    assert ElixirEmailReplyParser.parse_message(content) === "This is a test for inbox replying to a github message."
+  end
+
 
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
