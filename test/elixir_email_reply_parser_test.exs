@@ -34,6 +34,17 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 3).content, ">" ))
     assert (String.contains?(Enum.at(fragments, 5).content, "riak-users"))
   end
+  
+  test "test_reads_inline_replies" do
+    email_message = get_email('email_1_8')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 7
+
+    assert (for fragment <- fragments, do: fragment.quoted) === [true, false, true, false, true, false, false]
+    assert (for fragment <- fragments, do: fragment.signature) === [false, false, false, false, false, false, true]
+    assert (for fragment <- fragments, do: fragment.hidden) === [false, false, false, false, true, true, true]
+  end
 
 
   defp get_email(name) do
