@@ -112,6 +112,12 @@ defmodule ElixirEmailReplyParserTest do
     assert ElixirEmailReplyParser.parse_message(content) === "Outlook with a reply directly above line"
   end
 
+  test "test_sent_from_iphone" do
+    content = get_email_content('email_iPhone')
+
+    refute (String.contains?(ElixirEmailReplyParser.parse_message(content), "Sent from my iPhone"))
+  end
+
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
       content
