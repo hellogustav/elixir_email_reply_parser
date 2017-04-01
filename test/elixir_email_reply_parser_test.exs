@@ -77,6 +77,19 @@ defmodule ElixirEmailReplyParserTest do
     assert length(fragments) === 1
   end
 
+  test "test_verify_reads_signature_correct" do
+    email_message = get_email('correct_sig')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 2
+
+    assert (for fragment <- fragments, do: fragment.quoted) === [false, false]
+    assert (for fragment <- fragments, do: fragment.signature) === [false, true]
+    assert (for fragment <- fragments, do: fragment.hidden) === [false, true]
+
+    assert (String.contains?(Enum.at(fragments, 1).content, "--" ))
+  end
+
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
     ElixirEmailReplyParser.read(content)
