@@ -53,6 +53,14 @@ defmodule ElixirEmailReplyParserTest do
     assert length(fragments) === 5
   end
 
+  test "test_multiline_reply_headers" do
+    email_message = get_email('email_1_6')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert (String.contains?(Enum.at(fragments, 0).content, "I get" ))
+    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
+  end
+
 
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
