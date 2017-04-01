@@ -19,6 +19,22 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 2).content, "riak-users"))
   end
 
+  test "test_reads_bottom_message" do
+    email_message = get_email('email_1_2')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 6
+
+    assert (for fragment <- fragments, do: fragment.quoted) === [false, true, false, true, false, false]
+    assert (for fragment <- fragments, do: fragment.signature) === [false, false, false, false, false, true]
+    assert (for fragment <- fragments, do: fragment.hidden) === [false, false, false, true, true, true]
+
+    assert (String.contains?(Enum.at(fragments, 0).content, "Hi" ))
+    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
+    assert (String.contains?(Enum.at(fragments, 3).content, ">" ))
+    assert (String.contains?(Enum.at(fragments, 5).content, "riak-users"))
+  end
+
 
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
