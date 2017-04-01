@@ -90,6 +90,15 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 1).content, "--" ))
   end
 
+  test "test_deals_with_windows_line_endings" do
+    email_message = get_email('email_1_7')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert (String.contains?(Enum.at(fragments, 0).content, ":+1:" ))
+    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
+    assert (String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" ))
+  end
+
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
     ElixirEmailReplyParser.read(content)
