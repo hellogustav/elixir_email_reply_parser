@@ -46,6 +46,13 @@ defmodule ElixirEmailReplyParserTest do
     assert (for fragment <- fragments, do: fragment.hidden) === [false, false, false, false, true, true, true]
   end
 
+  test "test_reads_top_post" do
+    email_message = get_email('email_1_3')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 5
+  end
+
 
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
