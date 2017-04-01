@@ -106,6 +106,11 @@ defmodule ElixirEmailReplyParserTest do
     assert ElixirEmailReplyParser.parse_message(content) === "This is a test for inbox replying to a github message."
   end
 
+  test "test_parse_out_just_top_for_outlook_with_reply_directly_above_line" do
+    content = get_email_content('email_2_2')
+
+    assert ElixirEmailReplyParser.parse_message(content) === "Outlook with a reply directly above line"
+  end
 
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
