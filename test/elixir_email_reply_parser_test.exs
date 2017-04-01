@@ -99,9 +99,15 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" ))
   end
 
+
+
+  defp get_email_content(name) do
+      {:ok, content} = File.read("test/emails/#{name}.txt")
+      content
+  end
+
   defp get_email(name) do
-    {:ok, content} = File.read("test/emails/#{name}.txt")
-    ElixirEmailReplyParser.read(content)
+    ElixirEmailReplyParser.read(get_email_content(name))
   end
 
 end
