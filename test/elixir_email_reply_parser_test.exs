@@ -70,6 +70,13 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 1).content, "Loader" ))
   end
 
+  test "test_complex_body_with_one_fragment" do
+    email_message = get_email('email_1_5')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 1
+  end
+
   defp get_email(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
     ElixirEmailReplyParser.read(content)
