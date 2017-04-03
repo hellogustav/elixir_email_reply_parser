@@ -130,6 +130,13 @@ defmodule ElixirEmailReplyParserTest do
     refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:"))
   end
 
+  test "test_doesnt_remove_signature_delimiter_in_mid_line" do
+    email_message = get_email('email_sig_delimiter_in_middle_of_line')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 1
+  end
+
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
       content
