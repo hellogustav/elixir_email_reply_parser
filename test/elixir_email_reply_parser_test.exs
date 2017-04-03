@@ -34,7 +34,7 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 3).content, ">" ))
     assert (String.contains?(Enum.at(fragments, 5).content, "riak-users"))
   end
-  
+
   test "test_reads_inline_replies" do
     email_message = get_email('email_1_8')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
@@ -103,19 +103,19 @@ defmodule ElixirEmailReplyParserTest do
   test "test_reply_from_gmail" do
     content = get_email_content('email_gmail')
 
-    assert ElixirEmailReplyParser.parse_message(content) === "This is a test for inbox replying to a github message."
+    assert ElixirEmailReplyParser.parse_reply(content) === "This is a test for inbox replying to a github message."
   end
 
   test "test_parse_out_just_top_for_outlook_with_reply_directly_above_line" do
     content = get_email_content('email_2_2')
 
-    assert ElixirEmailReplyParser.parse_message(content) === "Outlook with a reply directly above line"
+    assert ElixirEmailReplyParser.parse_reply(content) === "Outlook with a reply directly above line"
   end
 
   test "test_sent_from_iphone" do
     content = get_email_content('email_iPhone')
 
-    refute (String.contains?(ElixirEmailReplyParser.parse_message(content), "Sent from my iPhone"))
+    refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "Sent from my iPhone"))
   end
 
   defp get_email_content(name) do
