@@ -19,6 +19,10 @@ defmodule ElixirEmailReplyParser do
   def read(text) do
     ElixirEmailReplyParser.Parser.read(text)
   end
+
+  def parse_reply(text) do
+    text |> ElixirEmailReplyParser.Parser.read |> ElixirEmailReplyParser.Parser.reply
+  end
 end
 
 defmodule ElixirEmailReplyParser.Fragment do
@@ -62,6 +66,13 @@ defmodule ElixirEmailReplyParser.Parser do
     {:ok, fragments} = scan_line([], false, nil, lines)
 
     %ElixirEmailReplyParser.EmailMessage{fragments: Enum.reverse(fragments)}
+  end
+
+  def reply(%ElixirEmailReplyParser.EmailMessage{fragments: fragments}) do
+    fragments
+    |> Enum.filter_map(fn f -> unless (f.hidden or f.quoted), do: f end,
+      fn f -> f.content end)
+    |> Enum.join("\n")
   end
 
   defp string_empty?(s) when is_bitstring(s) do
