@@ -124,6 +124,12 @@ defmodule ElixirEmailReplyParserTest do
     refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "Sent from my iPhone"))
   end
 
+  test "test_email_one_is_not_on" do
+    content = get_email_content('email_one_is_not_on')
+
+    refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:"))
+  end
+
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
       content
