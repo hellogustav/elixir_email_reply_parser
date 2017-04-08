@@ -63,7 +63,7 @@ defmodule ElixirEmailReplyParser.Parser do
     text = Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, text, "\\1\n")
     lines = String.split(text, "\n")
     lines = Enum.reverse(lines)
-    {:ok, fragments} = scan_line([], false, nil, lines)
+    {:ok, fragments} = scan_line({nil, [], false}, lines)
 
     %ElixirEmailReplyParser.EmailMessage{fragments: Enum.reverse(fragments)}
   end
@@ -83,22 +83,21 @@ defmodule ElixirEmailReplyParser.Parser do
     Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
   end
 
-  defp scan_line(fragments, _found_visible, nil, []), do: {:ok, Enum.reverse(fragments)}
-
-  defp scan_line(fragments, found_visible, fragment, []) do
-    {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
-    scan_line(fragments, found_visible, nil, [])
+  defp scan_line({nil, fragments, _found_visible}, []) do
+    {:ok, Enum.reverse(fragments)}
   end
 
-  defp scan_line(fragments, found_visible, fragment, [line | lines]) do
-    is_empty = string_empty?(line)
+  defp scan_line({_fragment, _fragments, _found_visible} = parameters, []) do
+    parameters
+    |> finish_fragment
+    |> scan_line([])
+  end
 
-    {fragment, fragments, found_visible} =
-      {fragment, fragments, found_visible}
-      |> check_signature(is_empty)
-      |> process_line(line)
-
-    scan_line(fragments, found_visible, fragment, lines)
+  defp scan_line({_fragment, _fragments, _found_visible} = parameters, [line | lines]) do
+    parameters
+    |> check_signature(string_empty?(line))
+    |> process_line(line)
+    |> scan_line(lines)
   end
 
   defp consolidate_lines(fragment) do
