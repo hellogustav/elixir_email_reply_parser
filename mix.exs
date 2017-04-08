@@ -28,6 +28,9 @@ defmodule ElixirEmailReplyParser.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:earmark, "~> 1.2.0", only: :dev},
+      {:ex_doc, "~> 0.15", only: :dev}
+    ]
   end
 end
