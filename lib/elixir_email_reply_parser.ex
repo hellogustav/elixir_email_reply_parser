@@ -1,6 +1,6 @@
 defmodule ElixirEmailReplyParser do
   @moduledoc """
-  Documentation for ElixirEmailReplyParser.
+  Main  ElixirEmailReplyParser module
   """
 
   @doc """
@@ -16,10 +16,25 @@ defmodule ElixirEmailReplyParser do
     :world
   end
 
+  @doc """
+  Parses provided email body text into an object ElixirEmailReplyParser.EmailMessage
+  containing a list of ElixirEmailReplyParser.Fragment under fragments: key
+
+  """
   def read(text) do
     ElixirEmailReplyParser.Parser.read(text)
   end
 
+  @doc ~S"""
+  Extracts reply from provided email body text
+
+  ## Examples
+
+    iex> email_content = "Hi!\n\n How are you?\n__________\nFrom: Some Author\n\n Previous email"
+    iex> ElixirEmailReplyParser.parse_reply(email_content)
+    "Hi!\n\n How are you?"
+
+  """
   def parse_reply(text) do
     text |> ElixirEmailReplyParser.Parser.read |> ElixirEmailReplyParser.Parser.reply
   end
