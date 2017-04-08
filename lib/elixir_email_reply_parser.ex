@@ -82,12 +82,7 @@ defmodule ElixirEmailReplyParser.Parser do
   defp scan_line(fragments, _found_visible, nil, []), do: {:ok, Enum.reverse(fragments)}
 
   defp scan_line(fragments, found_visible, fragment, []) do
-    if (fragment) do
-      fragment = consolidate_lines(fragment)
-      {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
-      {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
-      {fragment, fragments, found_visible} = add_fragment({fragment, fragments, found_visible})
-    end
+    {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
     scan_line(fragments, found_visible, nil, [])
   end
 
@@ -102,22 +97,14 @@ defmodule ElixirEmailReplyParser.Parser do
       previous_line = String.trim(previous_line)
       if (Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
         fragment = mark_as_signature(fragment)
-        fragment = consolidate_lines(fragment)
-        {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
-        {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
-        {fragment, fragments, found_visible} = add_fragment({fragment, fragments, found_visible})
+        {fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
       end
     end
 
     if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
       fragment = %{fragment | lines: [line | fragment.lines]}
     else
-      if (fragment) do
-        fragment = consolidate_lines(fragment)
-        {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
-        {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
-        {fragment, fragments, found_visible} = add_fragment({fragment, fragments, found_visible})
-      end
+      {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
       fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
     end
     scan_line(fragments, found_visible, fragment, lines)
@@ -155,5 +142,17 @@ defmodule ElixirEmailReplyParser.Parser do
 
   defp add_fragment({fragment, fragments, found_visible}) do
     {nil, [fragment | fragments], found_visible}
+  end
+
+  defp finish_fragment({nil, _fragments, _found_visible} = parameters) do
+    parameters
+  end
+
+  defp finish_fragment({fragment, fragments, found_visible}) do
+    fragment = consolidate_lines(fragment)
+    {fragment, fragments, found_visible}
+    |> hide_headers
+    |> hide_hidden
+    |> add_fragment
   end
 end
