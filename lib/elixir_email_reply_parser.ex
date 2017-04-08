@@ -79,6 +79,10 @@ defmodule ElixirEmailReplyParser.Parser do
     String.trim(s) === ""
   end
 
+  defp string_signature?(s) when is_bitstring(s) do
+    Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
+  end
+
   defp scan_line(fragments, _found_visible, nil, []), do: {:ok, Enum.reverse(fragments)}
 
   defp scan_line(fragments, found_visible, fragment, []) do
@@ -92,14 +96,7 @@ defmodule ElixirEmailReplyParser.Parser do
     is_header = is_quote_header or Regex.match?(~r/^(From|Sent|To|Subject): .+/, line)
     is_empty = string_empty?(line)
 
-    if (fragment && is_empty) do
-      [previous_line | _tail] = fragment.lines
-      previous_line = String.trim(previous_line)
-      if (Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
-        fragment = mark_as_signature(fragment)
-        {fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
-      end
-    end
+    {fragment, fragments, found_visible} = check_signature({fragment, fragments, found_visible}, is_empty)
 
     if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
       fragment = %{fragment | lines: [line | fragment.lines]}
@@ -154,5 +151,27 @@ defmodule ElixirEmailReplyParser.Parser do
     |> hide_headers
     |> hide_hidden
     |> add_fragment
+  end
+
+  defp check_signature(parameters, false) do
+    parameters
+  end
+
+  defp check_signature({nil, _fragments, _found_visible} = parameters, true) do
+    parameters
+  end
+
+  defp check_signature({fragment, fragments, found_visible} = parameters, true) do
+    [previous_line | _tail] = fragment.lines
+    is_previous_line_signature =
+      previous_line
+      |> String.trim
+      |> string_signature?
+    if (is_previous_line_signature) do
+      fragment = mark_as_signature(fragment)
+      finish_fragment({fragment, fragments, found_visible})
+    else
+      parameters
+    end
   end
 end
