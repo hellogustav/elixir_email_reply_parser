@@ -99,6 +99,25 @@ defmodule ElixirEmailReplyParserTest do
     assert (String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" ))
   end
 
+  test "test_parser_read" do
+    content = get_email_content('email_1_2')
+
+    email_message = ElixirEmailReplyParser.Parser.read(content)
+
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+    for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
+
+    assert String.contains?(ElixirEmailReplyParser.Parser.reply(email_message), "You can list the keys for the bucket")
+  end
+
+  test "test_parser_reply" do
+    email_message = get_email('email_1_2')
+
+    reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
+
+    assert is_bitstring(reply_text)
+    assert String.contains?(reply_text, "You can list the keys for the bucket")
+  end
 
   test "test_reply_from_gmail" do
     content = get_email_content('email_gmail')
