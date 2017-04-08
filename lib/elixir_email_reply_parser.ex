@@ -91,19 +91,13 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp scan_line(fragments, found_visible, fragment, [line | lines]) do
-    is_quoted = Regex.match?(~r/^ *(>+)/, line)
-    is_quote_header = Regex.match?(~r/On.*wrote:$/, line)
-    is_header = is_quote_header or Regex.match?(~r/^(From|Sent|To|Subject): .+/, line)
     is_empty = string_empty?(line)
 
-    {fragment, fragments, found_visible} = check_signature({fragment, fragments, found_visible}, is_empty)
+    {fragment, fragments, found_visible} =
+      {fragment, fragments, found_visible}
+      |> check_signature(is_empty)
+      |> process_line(line)
 
-    if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
-      fragment = %{fragment | lines: [line | fragment.lines]}
-    else
-      {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
-      fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
-    end
     scan_line(fragments, found_visible, fragment, lines)
   end
 
@@ -172,6 +166,22 @@ defmodule ElixirEmailReplyParser.Parser do
       finish_fragment({fragment, fragments, found_visible})
     else
       parameters
+    end
+  end
+
+  defp process_line({fragment, fragments, found_visible}, line) do
+    is_quoted = Regex.match?(~r/^ *(>+)/, line)
+    is_quote_header = Regex.match?(~r/On.*wrote:$/, line)
+    is_header = is_quote_header or Regex.match?(~r/^(From|Sent|To|Subject): .+/, line)
+    is_empty = string_empty?(line)
+
+    if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
+      fragment = %{fragment | lines: [line | fragment.lines]}
+      {fragment, fragments, found_visible}
+    else
+      {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
+      fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
+      {fragment, fragments, found_visible}
     end
   end
 end
