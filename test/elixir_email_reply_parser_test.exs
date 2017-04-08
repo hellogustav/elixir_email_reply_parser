@@ -149,6 +149,16 @@ defmodule ElixirEmailReplyParserTest do
     refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:"))
   end
 
+  test "test_partial_quote_header" do
+    content = get_email_content('email_partial_quote_header')
+    email_message = ElixirEmailReplyParser.Parser.read(content)
+    reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
+
+    assert String.contains?(reply_text, "On your remote host you can run:" )
+    assert String.contains?(reply_text, "telnet 127.0.0.1 52698")
+    assert String.contains?(reply_text, "This should connect to TextMate")
+  end
+
   test "test_doesnt_remove_signature_delimiter_in_mid_line" do
     email_message = get_email('email_sig_delimiter_in_middle_of_line')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
