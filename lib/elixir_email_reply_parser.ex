@@ -44,12 +44,14 @@ end
 
 defmodule ElixirEmailReplyParser.Parser do
   def read(text) do
-    text = normalize_line_endings(text)
-    text = handle_multiline(text)
-    text = draw_away_lines_with_underscores(text)
+    lines =
+      text
+      |> normalize_line_endings
+      |> handle_multiline
+      |> draw_away_lines_with_underscores
+      |> String.split("\n")
+      |> Enum.reverse
 
-    lines = String.split(text, "\n")
-    lines = Enum.reverse(lines)
     {:ok, fragments} = scan_line({nil, [], false}, lines)
 
     %ElixirEmailReplyParser.EmailMessage{fragments: Enum.reverse(fragments)}
