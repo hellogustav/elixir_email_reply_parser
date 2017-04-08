@@ -83,18 +83,9 @@ defmodule ElixirEmailReplyParser.Parser do
 
   defp scan_line(fragments, found_visible, fragment, []) do
     if (fragment) do
-      fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
-      if (fragment.headers) do
-        found_visible = false
-        fragments = for frag <- fragments, do: %{frag | hidden: true}
-      end
-      unless (found_visible) do
-        if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
-          fragment = %{fragment | hidden: true}
-        else
-          found_visible = true
-        end
-      end
+      fragment = consolidate_lines(fragment)
+      {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
+      {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
       fragments = [fragment | fragments]
     end
     scan_line(fragments, found_visible, nil, [])
@@ -110,18 +101,10 @@ defmodule ElixirEmailReplyParser.Parser do
       [previous_line | _tail] = fragment.lines
       previous_line = String.trim(previous_line)
       if (Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
-        fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), signature: true, lines: nil}
-        if (fragment.headers) do
-          found_visible = false
-          fragments = for frag <- fragments, do: %{frag | hidden: true}
-        end
-        unless (found_visible) do
-          if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
-            fragment = %{fragment | hidden: true}
-          else
-            found_visible = true
-          end
-        end
+        fragment = mark_as_signature(fragment)
+        fragment = consolidate_lines(fragment)
+        {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
+        {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
         fragments = [fragment | fragments]
         fragment = nil
       end
@@ -131,23 +114,44 @@ defmodule ElixirEmailReplyParser.Parser do
       fragment = %{fragment | lines: [line | fragment.lines]}
     else
       if (fragment) do
-        fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
-        if (fragment.headers) do
-          found_visible = false
-          fragments = for frag <- fragments, do: %{frag | hidden: true}
-        end
-        unless (found_visible) do
-          if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
-            fragment = %{fragment | hidden: true}
-          else
-            found_visible = true
-          end
-        end
+        fragment = consolidate_lines(fragment)
+        {fragment, fragments, found_visible} = hide_headers({fragment, fragments, found_visible})
+        {fragment, fragments, found_visible} = hide_hidden({fragment, fragments, found_visible})
         fragments = [fragment | fragments]
         fragment = nil
       end
       fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
     end
     scan_line(fragments, found_visible, fragment, lines)
+  end
+
+  defp consolidate_lines(fragment) do
+    %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
+  end
+
+  defp mark_as_signature(fragment) do
+    %{fragment | signature: true}
+  end
+
+  defp hide_headers({fragment, fragments, found_visible} = parameters) do
+    if (fragment.headers) do
+      found_visible = false
+      fragments = for frag <- fragments, do: %{frag | hidden: true}
+      {fragment, fragments, found_visible}
+    else
+      parameters
+    end
+  end
+
+  defp hide_hidden({fragment, fragments, found_visible} = parameters) do
+    if (found_visible) do
+      parameters
+    else
+      if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
+        {%{fragment | hidden: true}, fragments, found_visible}
+      else
+        {fragment, fragments, true}
+      end
+    end
   end
 end
