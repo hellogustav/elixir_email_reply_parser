@@ -167,6 +167,20 @@ defmodule ElixirEmailReplyParserTest do
     assert String.trim(reply_text) === "And another reply!"
   end
 
+  test "test_multiple_on" do
+    email_message = get_email('greedy_on')
+    %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
+
+    assert length(fragments) === 3
+    assert Regex.match?(~r/^On your remote host/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On 9 Jan 2014/, Enum.at(fragments, 1).content)
+
+
+    assert (for fragment <- fragments, do: fragment.quoted) === [false, true, false]
+    assert (for fragment <- fragments, do: fragment.signature) === [false, false, false]
+    assert (for fragment <- fragments, do: fragment.hidden) === [false, true, true]
+  end
+
   test "test_doesnt_remove_signature_delimiter_in_mid_line" do
     email_message = get_email('email_sig_delimiter_in_middle_of_line')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
