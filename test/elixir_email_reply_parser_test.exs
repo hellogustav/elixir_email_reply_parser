@@ -15,8 +15,8 @@ defmodule ElixirEmailReplyParserTest do
     assert (for fragment <- fragments, do: fragment.signature) === [false, true, true]
     assert (for fragment <- fragments, do: fragment.hidden) === [false, true, true]
 
-    assert (String.contains?(Enum.at(fragments, 0).content, "folks" ))
-    assert (String.contains?(Enum.at(fragments, 2).content, "riak-users"))
+    assert String.contains?(Enum.at(fragments, 0).content, "folks" )
+    assert String.contains?(Enum.at(fragments, 2).content, "riak-users")
   end
 
   test "test_reads_bottom_message" do
@@ -29,10 +29,10 @@ defmodule ElixirEmailReplyParserTest do
     assert (for fragment <- fragments, do: fragment.signature) === [false, false, false, false, false, true]
     assert (for fragment <- fragments, do: fragment.hidden) === [false, false, false, true, true, true]
 
-    assert (String.contains?(Enum.at(fragments, 0).content, "Hi" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
-    assert (String.contains?(Enum.at(fragments, 3).content, ">" ))
-    assert (String.contains?(Enum.at(fragments, 5).content, "riak-users"))
+    assert String.contains?(Enum.at(fragments, 0).content, "Hi" )
+    assert String.contains?(Enum.at(fragments, 1).content, "On" )
+    assert String.contains?(Enum.at(fragments, 3).content, ">" )
+    assert String.contains?(Enum.at(fragments, 5).content, "riak-users")
   end
 
   test "test_reads_inline_replies" do
@@ -57,17 +57,17 @@ defmodule ElixirEmailReplyParserTest do
     email_message = get_email('email_1_6')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert (String.contains?(Enum.at(fragments, 0).content, "I get" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
+    assert String.contains?(Enum.at(fragments, 0).content, "I get" )
+    assert String.contains?(Enum.at(fragments, 1).content, "On" )
   end
 
   test "test_captures_date_string" do
     email_message = get_email('email_1_4')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert (String.contains?(Enum.at(fragments, 0).content, "Awesome" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "Loader" ))
+    assert String.contains?(Enum.at(fragments, 0).content, "Awesome" )
+    assert String.contains?(Enum.at(fragments, 1).content, "On" )
+    assert String.contains?(Enum.at(fragments, 1).content, "Loader" )
   end
 
   test "test_complex_body_with_one_fragment" do
@@ -87,16 +87,16 @@ defmodule ElixirEmailReplyParserTest do
     assert (for fragment <- fragments, do: fragment.signature) === [false, true]
     assert (for fragment <- fragments, do: fragment.hidden) === [false, true]
 
-    assert (String.contains?(Enum.at(fragments, 1).content, "--" ))
+    assert String.contains?(Enum.at(fragments, 1).content, "--" )
   end
 
   test "test_deals_with_windows_line_endings" do
     email_message = get_email('email_1_7')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert (String.contains?(Enum.at(fragments, 0).content, ":+1:" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "On" ))
-    assert (String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" ))
+    assert String.contains?(Enum.at(fragments, 0).content, ":+1:" )
+    assert String.contains?(Enum.at(fragments, 1).content, "On" )
+    assert String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" )
   end
 
   test "test_parser_read" do
@@ -140,13 +140,13 @@ defmodule ElixirEmailReplyParserTest do
   test "test_sent_from_iphone" do
     content = get_email_content('email_iPhone')
 
-    refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "Sent from my iPhone"))
+    refute String.contains?(ElixirEmailReplyParser.parse_reply(content), "Sent from my iPhone")
   end
 
   test "test_email_one_is_not_on" do
     content = get_email_content('email_one_is_not_on')
 
-    refute (String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:"))
+    refute String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:")
   end
 
   test "test_partial_quote_header" do
