@@ -73,13 +73,13 @@ defmodule ElixirEmailReplyParser.Parser do
     |> Enum.join("\n")
   end
 
-  defp normalize_line_endings(s) when is_bitstring(s) do
+  defp normalize_line_endings(s) when is_binary(s) do
     String.replace(s, "\r\n", "\n")
   end
 
   # Check for multi-line reply headers. Some clients break up
   # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
-  defp handle_multiline(s) when is_bitstring(s) do
+  defp handle_multiline(s) when is_binary(s) do
     re = ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s
 
     if (Regex.match?(re, s)) do
@@ -94,27 +94,27 @@ defmodule ElixirEmailReplyParser.Parser do
   # In order to ensure that these fragments are split correctly,
   # make sure that all lines of underscores are preceded by
   # at least two newline characters.
-  defp draw_away_lines_with_underscores(s) when is_bitstring(s) do
+  defp draw_away_lines_with_underscores(s) when is_binary(s) do
     Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, s, "\\1\n")
   end
 
-  defp string_empty?(s) when is_bitstring(s) do
+  defp string_empty?(s) when is_binary(s) do
     String.trim(s) === ""
   end
 
-  defp string_signature?(s) when is_bitstring(s) do
+  defp string_signature?(s) when is_binary(s) do
     Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
   end
 
-  defp string_quoted?(s) when is_bitstring(s) do
+  defp string_quoted?(s) when is_binary(s) do
     Regex.match?(~r/^ *(>+)/, s)
   end
 
-  defp string_quote_header?(s) when is_bitstring(s) do
+  defp string_quote_header?(s) when is_binary(s) do
     Regex.match?(~r/On.*wrote:$/, s)
   end
 
-  defp string_email_header?(s) when is_bitstring(s) do
+  defp string_email_header?(s) when is_binary(s) do
     Regex.match?(~r/^(From|Sent|To|Subject): .+/, s)
   end
 
