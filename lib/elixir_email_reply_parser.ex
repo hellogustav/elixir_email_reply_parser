@@ -83,6 +83,18 @@ defmodule ElixirEmailReplyParser.Parser do
     Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
   end
 
+  defp string_quoted?(s) when is_bitstring(s) do
+    Regex.match?(~r/^ *(>+)/, s)
+  end
+
+  defp string_quote_header?(s) when is_bitstring(s) do
+    Regex.match?(~r/On.*wrote:$/, s)
+  end
+
+  defp string_email_header?(s) when is_bitstring(s) do
+    Regex.match?(~r/^(From|Sent|To|Subject): .+/, s)
+  end
+
   defp scan_line({nil, fragments, _found_visible}, []) do
     {:ok, Enum.reverse(fragments)}
   end
@@ -169,9 +181,9 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp process_line({fragment, fragments, found_visible}, line) do
-    is_quoted = Regex.match?(~r/^ *(>+)/, line)
-    is_quote_header = Regex.match?(~r/On.*wrote:$/, line)
-    is_header = is_quote_header or Regex.match?(~r/^(From|Sent|To|Subject): .+/, line)
+    is_quoted = string_quoted?(line)
+    is_quote_header = string_quote_header?(line)
+    is_header = is_quote_header or string_email_header?(line)
     is_empty = string_empty?(line)
 
     if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
