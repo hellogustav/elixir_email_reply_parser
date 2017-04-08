@@ -4,19 +4,6 @@ defmodule ElixirEmailReplyParser do
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> ElixirEmailReplyParser.hello
-      :world
-
-  """
-  def hello do
-    :world
-  end
-
-  @doc """
   Parses provided email body text into an object ElixirEmailReplyParser.EmailMessage
   containing a list of ElixirEmailReplyParser.Fragment under fragments: key
 
