@@ -46,14 +46,9 @@ defmodule ElixirEmailReplyParser.Parser do
   def read(text) do
     # Normalize line endings.
     text = String.replace(text, "\r\n", "\n")
-
     text = handle_multiline(text)
+    text = draw_away_lines_with_underscores(text)
 
-    # Some users may reply directly above a line of underscores.
-    # In order to ensure that these fragments are split correctly,
-    # make sure that all lines of underscores are preceded by
-    # at least two newline characters.
-    text = Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, text, "\\1\n")
     lines = String.split(text, "\n")
     lines = Enum.reverse(lines)
     {:ok, fragments} = scan_line({nil, [], false}, lines)
@@ -79,6 +74,14 @@ defmodule ElixirEmailReplyParser.Parser do
     else
       s
     end
+  end
+
+  # Some users may reply directly above a line of underscores.
+  # In order to ensure that these fragments are split correctly,
+  # make sure that all lines of underscores are preceded by
+  # at least two newline characters.
+  defp draw_away_lines_with_underscores(s) when is_bitstring(s) do
+    Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, s, "\\1\n")
   end
 
   defp string_empty?(s) when is_bitstring(s) do
