@@ -44,8 +44,7 @@ end
 
 defmodule ElixirEmailReplyParser.Parser do
   def read(text) do
-    # Normalize line endings.
-    text = String.replace(text, "\r\n", "\n")
+    text = normalize_line_endings(text)
     text = handle_multiline(text)
     text = draw_away_lines_with_underscores(text)
 
@@ -61,6 +60,10 @@ defmodule ElixirEmailReplyParser.Parser do
     |> Enum.filter_map(fn f -> unless (f.hidden or f.quoted), do: f end,
       fn f -> f.content end)
     |> Enum.join("\n")
+  end
+
+  defp normalize_line_endings(s) when is_bitstring(s) do
+    String.replace(s, "\r\n", "\n")
   end
 
   # Check for multi-line reply headers. Some clients break up
