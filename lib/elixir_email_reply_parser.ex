@@ -59,8 +59,8 @@ defmodule ElixirEmailReplyParser.Parser do
 
   def reply(%ElixirEmailReplyParser.EmailMessage{fragments: fragments}) do
     fragments
-    |> Enum.filter_map(fn f -> unless (f.hidden or f.quoted), do: f end,
-      fn f -> f.content end)
+    |> Enum.filter(fn f -> unless (f.hidden or f.quoted), do: true end)
+    |> Enum.map(fn f -> f.content end)
     |> Enum.join("\n")
   end
 
