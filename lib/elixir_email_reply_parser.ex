@@ -22,6 +22,7 @@ defmodule ElixirEmailReplyParser do
       "Hi!\n\n How are you?"
 
   """
+  @spec parse_reply(String.t) :: String.t
   def parse_reply(text) do
     text |> ElixirEmailReplyParser.Parser.read |> ElixirEmailReplyParser.Parser.reply
   end
