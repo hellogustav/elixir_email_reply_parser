@@ -159,6 +159,14 @@ defmodule ElixirEmailReplyParserTest do
     assert String.contains?(reply_text, "This should connect to TextMate")
   end
 
+  test "test_email_headers_no_delimiter" do
+    content = get_email_content('email_headers_no_delimiter')
+    email_message = ElixirEmailReplyParser.Parser.read(content)
+    reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
+
+    assert String.trim(reply_text) === "And another reply!"
+  end
+
   test "test_doesnt_remove_signature_delimiter_in_mid_line" do
     email_message = get_email('email_sig_delimiter_in_middle_of_line')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
