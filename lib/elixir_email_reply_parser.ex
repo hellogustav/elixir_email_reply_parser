@@ -83,7 +83,7 @@ defmodule ElixirEmailReplyParser.Parser do
 
   defp scan_line(fragments, found_visible, fragment, []) do
     if (fragment) do
-      fragment = %{fragment | content: Enum.join(fragment.lines), lines: nil}
+      fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
       if (fragment.headers) do
         found_visible = false
         fragments = for frag <- fragments, do: %{frag | hidden: true}
@@ -110,7 +110,7 @@ defmodule ElixirEmailReplyParser.Parser do
       [previous_line | _tail] = fragment.lines
       previous_line = String.trim(previous_line)
       if (Regex.match?(~r/(--|__|-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
-        fragment = %{fragment | content: Enum.join(fragment.lines), signature: true, lines: nil}
+        fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), signature: true, lines: nil}
         if (fragment.headers) do
           found_visible = false
           fragments = for frag <- fragments, do: %{frag | hidden: true}
@@ -131,7 +131,7 @@ defmodule ElixirEmailReplyParser.Parser do
       fragment = %{fragment | lines: [line | fragment.lines]}
     else
       if (fragment) do
-        fragment = %{fragment | content: Enum.join(fragment.lines), lines: nil}
+        fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
         if (fragment.headers) do
           found_visible = false
           fragments = for frag <- fragments, do: %{frag | hidden: true}
