@@ -181,6 +181,16 @@ defmodule ElixirEmailReplyParserTest do
     assert (for fragment <- fragments, do: fragment.hidden) === [false, true, true]
   end
 
+  test "test_pathological_emails" do
+    content = get_email_content('pathological')
+
+    {computation_time, reply_text} = :timer.tc(&ElixirEmailReplyParser.parse_reply/1, [content])
+
+    assert(computation_time < 1000000, "Took too long")
+
+    assert reply_text === "I think you're onto something. I will try to fix the problem as soon as I\nget back to a computer."
+  end
+
   test "test_doesnt_remove_signature_delimiter_in_mid_line" do
     email_message = get_email('email_sig_delimiter_in_middle_of_line')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
