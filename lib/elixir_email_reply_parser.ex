@@ -49,9 +49,9 @@ defmodule ElixirEmailReplyParser.Parser do
 
     # Check for multi-line reply headers. Some clients break up
     # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
-    text = if (Regex.match?(~r/^(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)$/m, text)) do
+    text = if (Regex.match?(~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s, text)) do
       # Remove all new lines from the reply header.
-      Regex.replace(~r/^(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)$/, text, fn x -> String.replace(x, "\n", "") end)
+      Regex.replace(~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s, text, fn x -> String.replace(x, "\n", "") end)
     else
       text
     end
