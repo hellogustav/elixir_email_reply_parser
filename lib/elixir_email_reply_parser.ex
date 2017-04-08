@@ -47,14 +47,7 @@ defmodule ElixirEmailReplyParser.Parser do
     # Normalize line endings.
     text = String.replace(text, "\r\n", "\n")
 
-    # Check for multi-line reply headers. Some clients break up
-    # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
-    text = if (Regex.match?(~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s, text)) do
-      # Remove all new lines from the reply header.
-      Regex.replace(~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s, text, fn x -> String.replace(x, "\n", "") end)
-    else
-      text
-    end
+    text = handle_multiline(text)
 
     # Some users may reply directly above a line of underscores.
     # In order to ensure that these fragments are split correctly,
@@ -73,6 +66,19 @@ defmodule ElixirEmailReplyParser.Parser do
     |> Enum.filter_map(fn f -> unless (f.hidden or f.quoted), do: f end,
       fn f -> f.content end)
     |> Enum.join("\n")
+  end
+
+  # Check for multi-line reply headers. Some clients break up
+  # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
+  defp handle_multiline(s) when is_bitstring(s) do
+    re = ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s
+
+    if (Regex.match?(re, s)) do
+      # Remove all new lines from the reply header.
+      Regex.replace(re, s, fn x -> String.replace(x, "\n", "") end)
+    else
+      s
+    end
   end
 
   defp string_empty?(s) when is_bitstring(s) do
