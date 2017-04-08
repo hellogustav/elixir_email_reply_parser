@@ -109,7 +109,7 @@ defmodule ElixirEmailReplyParser.Parser do
     if (fragment && is_empty) do
       [previous_line | _tail] = fragment.lines
       previous_line = String.trim(previous_line)
-      if (Regex.match?(~r/(--|__|-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
+      if (Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, previous_line)) do
         fragment = %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), signature: true, lines: nil}
         if (fragment.headers) do
           found_visible = false
