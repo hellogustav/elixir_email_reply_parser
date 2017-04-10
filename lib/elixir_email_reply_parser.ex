@@ -99,7 +99,7 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp string_empty?(s) when is_binary(s) do
-    String.trim(s) === ""
+    String.trim(s) == ""
   end
 
   defp string_signature?(s) when is_binary(s) do
