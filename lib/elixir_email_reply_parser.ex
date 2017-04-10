@@ -161,15 +161,15 @@ defmodule ElixirEmailReplyParser.Parser do
     end
   end
 
-  defp hide_hidden({fragment, fragments, found_visible} = parameters) do
-    if (found_visible) do
-      parameters
+  defp hide_hidden({_fragment, _fragments, true} = parameters) do
+    parameters
+  end
+
+  defp hide_hidden({fragment, fragments, false}) do
+    if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
+      {%{fragment | hidden: true}, fragments, false}
     else
-      if (fragment.quoted or fragment.headers or fragment.signature or (string_empty?(fragment.content))) do
-        {%{fragment | hidden: true}, fragments, found_visible}
-      else
-        {fragment, fragments, true}
-      end
+      {fragment, fragments, true}
     end
   end
 
