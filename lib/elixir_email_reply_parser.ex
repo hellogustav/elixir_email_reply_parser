@@ -151,14 +151,13 @@ defmodule ElixirEmailReplyParser.Parser do
     %{fragment | signature: true}
   end
 
-  defp hide_headers({fragment, fragments, found_visible} = parameters) do
-    if (fragment.headers) do
-      found_visible = false
-      fragments = Enum.map(fragments, fn f -> %{f | hidden: true} end)
-      {fragment, fragments, found_visible}
-    else
-      parameters
-    end
+  defp hide_headers({%{headers: false}, _fragments, _found_visible} = parameters) do
+    parameters
+  end
+
+  defp hide_headers({fragment, fragments, _found_visible}) do
+    fragments = Enum.map(fragments, fn f -> %{f | hidden: true} end)
+    {fragment, fragments, false}
   end
 
   defp hide_hidden({_fragment, _fragments, true} = parameters) do
