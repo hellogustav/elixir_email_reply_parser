@@ -183,6 +183,12 @@ defmodule ElixirEmailReplyParser.Parser do
     |> add_fragment
   end
 
+  defp previous_line_signature?(%{lines: [previous_line | _tail]} = _fragment) do
+    previous_line
+    |> String.trim
+    |> string_signature?
+  end
+
   defp check_signature(parameters, false) do
     parameters
   end
@@ -192,12 +198,7 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp check_signature({fragment, fragments, found_visible} = parameters, true) do
-    [previous_line | _tail] = fragment.lines
-    is_previous_line_signature =
-      previous_line
-      |> String.trim
-      |> string_signature?
-    if (is_previous_line_signature) do
+    if (previous_line_signature?(fragment)) do
       fragment = mark_as_signature(fragment)
       finish_fragment({fragment, fragments, found_visible})
     else
