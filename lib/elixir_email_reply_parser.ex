@@ -136,9 +136,9 @@ defmodule ElixirEmailReplyParser.Parser do
     |> scan_line([])
   end
 
-  defp scan_line({_fragment, _fragments, _found_visible} = parameters, [line | lines]) do
+  defp scan_line({fragment, _fragments, _found_visible} = parameters, [line | lines]) do
     parameters
-    |> check_signature(string_empty?(line))
+    |> check_signature(string_empty?(line), previous_line_signature?(fragment))
     |> process_line(line)
     |> scan_line(lines)
   end
@@ -183,28 +183,20 @@ defmodule ElixirEmailReplyParser.Parser do
     |> add_fragment
   end
 
+  defp previous_line_signature?(nil) do
+    false
+  end
+
   defp previous_line_signature?(%{lines: [previous_line | _tail]} = _fragment) do
     previous_line
     |> String.trim
     |> string_signature?
   end
 
-  defp check_signature(parameters, false) do
-    parameters
-  end
-
-  defp check_signature({nil, _fragments, _found_visible} = parameters, true) do
-    parameters
-  end
-
-  defp check_signature({fragment, fragments, found_visible} = parameters, true) do
-    if (previous_line_signature?(fragment)) do
-      fragment = mark_as_signature(fragment)
-      finish_fragment({fragment, fragments, found_visible})
-    else
-      parameters
-    end
-  end
+  defp check_signature(parameters, line_is_empty, previous_line_is_signature)
+  defp check_signature(parameters, false , _), do: parameters
+  defp check_signature(parameters, true, false), do: parameters
+  defp check_signature({fragment, fragments, found_visible}, true, true), do: finish_fragment({mark_as_signature(fragment), fragments, found_visible})
 
   defp process_line({fragment, fragments, found_visible}, line) do
     is_quoted = string_quoted?(line)
