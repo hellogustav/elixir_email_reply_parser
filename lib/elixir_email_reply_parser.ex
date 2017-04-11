@@ -137,9 +137,14 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp scan_line({fragment, _fragments, _found_visible} = parameters, [line | lines]) do
+    is_quoted = string_quoted?(line)
+    is_quote_header = string_quote_header?(line)
+    is_header = is_quote_header or string_email_header?(line)
+    is_empty = string_empty?(line)
+
     parameters
-    |> check_signature(string_empty?(line), previous_line_signature?(fragment))
-    |> process_line(line)
+    |> check_signature(is_empty, previous_line_signature?(fragment))
+    |> process_line(line, is_quoted, is_header, is_quote_header, is_empty)
     |> scan_line(lines)
   end
 
@@ -198,19 +203,21 @@ defmodule ElixirEmailReplyParser.Parser do
   defp check_signature(parameters, true, false), do: parameters
   defp check_signature({fragment, fragments, found_visible}, true, true), do: finish_fragment({mark_as_signature(fragment), fragments, found_visible})
 
-  defp process_line({fragment, fragments, found_visible}, line) do
-    is_quoted = string_quoted?(line)
-    is_quote_header = string_quote_header?(line)
-    is_header = is_quote_header or string_email_header?(line)
-    is_empty = string_empty?(line)
-
-    if (fragment && (((fragment.headers == is_header) and (fragment.quoted == is_quoted)) or (fragment.quoted and (is_quote_header or is_empty)))) do
-      fragment = %{fragment | lines: [line | fragment.lines]}
-      {fragment, fragments, found_visible}
-    else
-      {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
-      fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
-      {fragment, fragments, found_visible}
-    end
+  defp add_line_to_fragment({fragment, fragments, found_visible}, line) do
+    fragment = %{fragment | lines: [line | fragment.lines]}
+    {fragment, fragments, found_visible}
   end
+
+  defp make_new_fragment({fragment, fragments, found_visible}, line, is_quoted, is_header) do
+    {_fragment, fragments, found_visible} = finish_fragment({fragment, fragments, found_visible})
+    fragment = %ElixirEmailReplyParser.Fragment{lines: [line], quoted: is_quoted, headers: is_header}
+    {fragment, fragments, found_visible}
+  end
+
+  defp process_line(parameters, line, is_quoted, is_header, is_quote_header, is_empty)
+  defp process_line({nil, _f, _fv} = p, l, q, h, _qh , _e), do: make_new_fragment(p, l, q, h)
+  defp process_line({%{headers: h, quoted: q}, _f, _fv} = p, l, q, h, _qh, _e), do: add_line_to_fragment(p, l)
+  defp process_line({%{quoted: true}, _f, _fv} = p, l, _q, _h, true, _e), do: add_line_to_fragment(p, l)
+  defp process_line({%{quoted: true}, _f, _fv} = p, l, _q, _h, _qh, true), do: add_line_to_fragment(p, l)
+  defp process_line(p, l, q, h, _qh, _e), do: make_new_fragment(p, l, q, h)
 end
