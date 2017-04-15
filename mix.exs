@@ -4,9 +4,11 @@ defmodule ElixirEmailReplyParser.Mixfile do
   def project do
     [app: :elixir_email_reply_parser,
      version: "0.1.0",
+     description: description(),
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     package: package(),
      deps: deps()]
   end
 
@@ -18,18 +20,25 @@ defmodule ElixirEmailReplyParser.Mixfile do
     [extra_applications: [:logger]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:my_dep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
+  defp description do
+    """
+    Email reply parser for retrieval of the last reply from email message.
+    Originally an Elixir port of https://github.com/github/email_reply_parser
+    as well as its port https://github.com/zapier/email-reply-parser.
+    """
+  end
+
+  defp package do
+    [name: :elixir_email_reply_parser,
+    maintainers: ["elixir.email.reply.parser@gmail.com"],
+    licenses: ["MIT"],
+    links: %{"GitHub" => "https://github.com/hellogustav/elixir_email_reply_parser",
+             "Docs" => "https://hexdocs.pm/elixir_email_reply_parser"}]
+  end
+
   defp deps do
     [
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
       {:earmark, "~> 1.2.0", only: :dev},
       {:ex_doc, "~> 0.15", only: :dev}
     ]
