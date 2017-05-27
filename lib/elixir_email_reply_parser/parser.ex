@@ -91,7 +91,7 @@ defmodule ElixirEmailReplyParser.Parser do
 
   @spec string_email_header?(String.t) :: boolean
   defp string_email_header?(s) do
-    Regex.match?(~r/^(From|Sent|To|Subject): .+/, s)
+    Regex.match?(~r/^\*?(From|Sent|To|Subject):\*? .+/, s)
     or
     Regex.match?(~r/^\*?(Von|Gesendet|An|Betreff):\*? .+/, s)
   end
