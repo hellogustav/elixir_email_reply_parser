@@ -32,18 +32,17 @@ defmodule ElixirEmailReplyParser.Parser do
   # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
   @spec handle_multiline(String.t) :: String.t
   defp handle_multiline(s) do
-    re_en = ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s
-    re_de1 = ~r/(schrieb\sam\s(.+?)um\s(.+?):)/s
-    re_de2 = ~r/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s
-    s
-    |> remove_newlines_if_matched(re_en)
-    |> remove_newlines_if_matched(re_de1)
-    |> remove_newlines_if_matched(re_de2)
+    Enum.reduce([
+          ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s,
+          ~r/(schrieb\sam\s(.+?)um\s(.+?):)/s,
+          ~r/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s ],
+        s,
+        &remove_newlines_if_matched/2)
   end
 
   # For removal of all new lines from the reply header.
-  @spec remove_newlines_if_matched(String.t, Regex.t) :: String.t
-  defp remove_newlines_if_matched(s, re) do
+  @spec remove_newlines_if_matched(Regex.t, String.t) :: String.t
+  defp remove_newlines_if_matched(re, s) do
     if (Regex.match?(re, s)) do
       Regex.replace(re, s, fn x -> String.replace(x, "\n", "") end)
     else
