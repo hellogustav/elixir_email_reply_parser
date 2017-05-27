@@ -5,13 +5,13 @@ Gut, und dir?
 Eva
 
 Mag. Eva Musterfrau
-A-1000 Wien, Gr=C3=BCngasse 1
+A-1000 Wien, Grüngasse 1
 Tel: +44-7700-900333
------Urspr=C3=BCngliche Nachricht-----
+-----Ursprüngliche Nachricht-----
 Von: Adam Mustermann [mailto:adam@example.com]
-Gesendet: Dienstag, 3. J=C3=A4nner 2017 20:00
+Gesendet: Dienstag, 3. Jänner 2017 20:00
 An: Eva Musterfrau; Peter Mustermann
-Betreff: Begr=C3=BCssung | Hallo
+Betreff: Begrüssung | Hallo
 
 Hallo Eva und Peter
 

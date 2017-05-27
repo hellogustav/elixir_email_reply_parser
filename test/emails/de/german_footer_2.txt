@@ -1,14 +1,14 @@
 Danke, auch gut.
 
---=20
+--
 Mobile: +44-7700-900111
 Skype: adam.mustermann.222
 Twitter: @AdamMustermann222
 
 _____________________________
 From: Eva Musterfrau <eva@example.com>
-Sent: Mittwoch, J=C3=A4nner 4, 2017 10:00 AM
-Subject: AW: Begr=C3=BCssung
+Sent: Mittwoch, Jänner 4, 2017 10:00 AM
+Subject: AW: Begrüssung
 To: Adam Mustermann <adam@example.com>
 
 
@@ -21,9 +21,9 @@ LG, Eva
 
 Gesendet von meinem BlackBerry 10-Smartphone.
 *Von:* Adam Mustermann [mailto:adam@example.com]
-*Gesendet:* Dienstag, 3. J=C3=A4nner 2017 20:00
+*Gesendet:* Dienstag, 3. Jänner 2017 20:00
 *An:* Eva Musterfrau
-*Betreff:* Begr=C3=BCssung
+*Betreff:* Begrüssung
 
 Hallo Eva
 
@@ -33,7 +33,7 @@ LG,
 Adam
 
 
---=20
+--
 Mobile: +44-7700-900111
 Skype: adam.mustermann.222
 Twitter: @AdamMustermann222
