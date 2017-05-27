@@ -74,13 +74,17 @@ defmodule ElixirEmailReplyParser.Parser do
     String.trim(s) == ""
   end
 
+  @spec match_at_least_one_regex?(String.t, [Regex.t]) :: boolean
+  defp match_at_least_one_regex?(s, regexes)
+  defp match_at_least_one_regex?(_, []), do: false
+  defp match_at_least_one_regex?(s, [head | tail]), do: (Regex.match?(head, s) or match_at_least_one_regex?(s, tail))
+
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
-    Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
-    or
-    Regex.match?(~r/^Diese Nachricht wurde von mein.* gesendet\.?$/, s)
-    or
-    Regex.match?(~r/^Von mein.* gesendet\.?$/, s)
+    match_at_least_one_regex?(s, [
+        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/,
+        ~r/^Diese Nachricht wurde von mein.* gesendet\.?$/,
+        ~r/^Von mein.* gesendet\.?$/ ])
   end
 
   @spec string_quoted?(String.t) :: boolean
@@ -90,20 +94,18 @@ defmodule ElixirEmailReplyParser.Parser do
 
   @spec string_quote_header?(String.t) :: boolean
   defp string_quote_header?(s) do
-    Regex.match?(~r/On.*wrote:$/, s)
-    or
-    Regex.match?(~r/^.+schrieb am.+um.+:$/, s)
-    or
-    Regex.match?(~r/^Am.+um.+schrieb.+:$/, s)
-    or
-    Regex.match?(~r/^-{5}Ursprüngliche Nachricht-{5}$/, s)
+    match_at_least_one_regex?(s, [
+        ~r/On.*wrote:$/,
+        ~r/^.+schrieb am.+um.+:$/,
+        ~r/^Am.+um.+schrieb.+:$/,
+        ~r/^-{5}Ursprüngliche Nachricht-{5}$/ ])
   end
 
   @spec string_email_header?(String.t) :: boolean
   defp string_email_header?(s) do
-    Regex.match?(~r/^\*?(From|Sent|To|Subject):\*? .+/, s)
-    or
-    Regex.match?(~r/^\*?(Von|Gesendet|An|Betreff):\*? .+/, s)
+    match_at_least_one_regex?(s, [
+        ~r/^\*?(From|Sent|To|Subject):\*? .+/,
+        ~r/^\*?(Von|Gesendet|An|Betreff):\*? .+/ ])
   end
 
   defp scan_line({nil, fragments, _found_visible}, []) do
