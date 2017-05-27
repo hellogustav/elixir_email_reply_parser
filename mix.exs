@@ -9,7 +9,14 @@ defmodule ElixirEmailReplyParser.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package(),
-     deps: deps()]
+     deps: deps(),
+
+     # Docs
+     name: "Elixir Email Reply Parser",
+     source_url: "https://github.com/hellogustav/elixir_email_reply_parser",
+     homepage_url: "https://github.com/hellogustav/elixir_email_reply_parser",
+     docs: [main: "readme",
+            extras: ["README.md"]]]
   end
 
   # Configuration for the OTP application
