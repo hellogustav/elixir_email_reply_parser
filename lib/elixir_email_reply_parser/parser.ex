@@ -31,8 +31,13 @@ defmodule ElixirEmailReplyParser.Parser do
   # the "On DATE, NAME <EMAIL> wrote:" line into multiple lines.
   @spec handle_multiline(String.t) :: String.t
   defp handle_multiline(s) do
-    re = ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s
-    remove_newlines_if_matched(s, re)
+    re_en = ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s
+    re_de1 = ~r/(schrieb\sam\s(.+?)um\s(.+?):)/s
+    re_de2 = ~r/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s
+    s
+    |> remove_newlines_if_matched(re_en)
+    |> remove_newlines_if_matched(re_de1)
+    |> remove_newlines_if_matched(re_de2)
   end
 
   # For removal of all new lines from the reply header.
@@ -62,6 +67,10 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
     Regex.match?(~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/, s)
+    or
+    Regex.match?(~r/^Diese Nachricht wurde von mein.* gesendet\.?$/, s)
+    or
+    Regex.match?(~r/^Von mein.* gesendet\.?$/, s)
   end
 
   @spec string_quoted?(String.t) :: boolean
@@ -72,11 +81,19 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_quote_header?(String.t) :: boolean
   defp string_quote_header?(s) do
     Regex.match?(~r/On.*wrote:$/, s)
+    or
+    Regex.match?(~r/^.+schrieb am.+um.+:$/, s)
+    or
+    Regex.match?(~r/^Am.+um.+schrieb.+:$/, s)
+    or
+    Regex.match?(~r/^-{5}Ursprüngliche Nachricht-{5}$/, s)
   end
 
   @spec string_email_header?(String.t) :: boolean
   defp string_email_header?(s) do
     Regex.match?(~r/^(From|Sent|To|Subject): .+/, s)
+    or
+    Regex.match?(~r/^\*?(Von|Gesendet|An|Betreff):\*? .+/, s)
   end
 
   defp scan_line({nil, fragments, _found_visible}, []) do
