@@ -194,6 +194,60 @@ defmodule ElixirEmailReplyParserTest do
     assert length(fragments) == 1
   end
 
+  test "german_reply_1" do
+    content = get_email_content("de/german1")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
+  test "german_reply_2" do
+    content = get_email_content("de/german2")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
+  test "german_reply_3" do
+      content = get_email_content("de/german3")
+
+      assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+    end
+
+  test "german_footer_1" do
+    content = get_email_content("de/german_footer_1")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
+  end
+
+  test "german_footer_2" do
+    content = get_email_content("de/german_footer_2")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, auch gut."
+  end
+
+  test "german_footer_3" do
+    content = get_email_content("de/german_footer_3")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
+  test "german_headers" do
+    content = get_email_content("de/german_headers")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
+  end
+
+  test "german_reply_1_multiline_header" do
+    content = get_email_content("de/german1_multiline")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
+  test "german_reply_2_multiline_header" do
+    content = get_email_content("de/german2_multiline")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
   defp get_email_content(name) do
       {:ok, content} = File.read("test/emails/#{name}.txt")
       content
