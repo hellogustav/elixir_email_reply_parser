@@ -7,6 +7,7 @@ defmodule ElixirEmailReplyParser.Parser do
       |> normalize_line_endings
       |> handle_multiline
       |> draw_away_lines_with_underscores
+      |> draw_away_signatures
       |> String.split("\n")
       |> Enum.reverse
 
@@ -57,6 +58,15 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec draw_away_lines_with_underscores(String.t) :: String.t
   defp draw_away_lines_with_underscores(s) do
     Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, s, "\\1\n")
+  end
+
+  # Some users may write directly above signature markers
+  # In order to ensure that these fragments are split correctly,
+  # make sure that all lines with signature markers are preceded by
+  # at least two newline characters.
+  @spec draw_away_signatures(String.t) :: String.t
+  defp draw_away_signatures(s) do
+    Regex.replace(~r/([^\n])(?=\n-{2,}\s*\n)$/m, s, "\\1\n")
   end
 
   @spec string_empty?(String.t) :: boolean
