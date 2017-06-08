@@ -249,8 +249,8 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   defp get_email_content(name) do
-      {:ok, content} = File.read("test/emails/#{name}.txt")
-      content
+    {:ok, content} = File.read("test/emails/#{name}.txt")
+    content
   end
 
   defp get_email(name) do
