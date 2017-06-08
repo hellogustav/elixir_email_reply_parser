@@ -1,5 +1,5 @@
 defmodule ElixirEmailReplyParserTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest ElixirEmailReplyParser
 
   test "test_simple_body" do
