@@ -365,11 +365,11 @@ I am currently using the Java HTTP API.\n"
     assert ElixirEmailReplyParser.parse_reply(non_ascii_body) == non_ascii_body
   end
 
-  test "ruby_test_returns_only_the_visible_fragments_as_a_string" do
-    email_message = get_email('email_2_1')
+  test "modified_ruby_test_returns_only_the_visible_fragments_as_a_string" do
+    email_message = get_email('email_1_2')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert ElixirEmailReplyParser.Parser.reply(email_message) == fragments |> Enum.filter_map(&(! &1.hidden), &(&1.content)) |> Enum.join("\n") |> String.trim_trailing()
+    assert ElixirEmailReplyParser.Parser.reply(email_message) == fragments |> Enum.filter_map(&(!(&1.hidden || &1.quoted)), &(&1.content)) |> Enum.join("\n") |> String.trim_trailing()
   end
 
   test "ruby_test_parse_out_just_top_for_outlook_reply" do
