@@ -21,6 +21,7 @@ defmodule ElixirEmailReplyParser.Parser do
     |> Enum.filter(fn f -> unless (f.hidden or f.quoted), do: true end)
     |> Enum.map(fn f -> f.content end)
     |> Enum.join("\n")
+    |> String.trim_trailing()
   end
 
   @spec normalize_line_endings(String.t) :: String.t
@@ -130,7 +131,11 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp consolidate_lines(fragment) do
-    %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
+    content =
+      fragment.lines
+      |> Enum.join("\n")
+      |> String.trim_leading()
+    %{fragment | content: content, lines: nil}
   end
 
   defp mark_as_signature(fragment) do
