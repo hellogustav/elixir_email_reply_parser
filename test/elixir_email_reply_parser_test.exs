@@ -296,7 +296,7 @@ I am currently using the Java HTTP API.\n"
     assert Regex.match?(~R/^_/, Enum.at(fragments, 5).content)
   end
 
-  test "ruby_test_reads_inline_replies" do
+  test "modified_ruby_test_reads_inline_replies" do
     email_message = get_email('email_1_8')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 7
@@ -310,7 +310,7 @@ I am currently using the Java HTTP API.\n"
     assert String.contains?(Enum.at(fragments, 2).content, "okay?")
     assert Regex.match?(~R/^and under this./, Enum.at(fragments, 3).content)
     assert Regex.match?(~R/inline/, Enum.at(fragments, 4).content)
-    assert Enum.at(fragments, 5).content == "\n"
+    assert Enum.at(fragments, 5).content == ""
     assert Enum.at(fragments, 6).content == "--\nHey there, this is my signature\n"
   end
 
