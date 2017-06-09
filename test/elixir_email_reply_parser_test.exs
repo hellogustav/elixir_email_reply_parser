@@ -271,8 +271,8 @@ I am currently using the Java HTTP API.\n"
     assert length(fragments) == 5
 
     assert (for fragment <- fragments, do: fragment.quoted) == [false, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true, true, true, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, false, false, true]
+    assert (for fragment <- fragments, do: fragment.signature) == [false, true, false, false, true]
+    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true, true, true]
 
     assert Regex.match?(~R/^Oh thanks.\n\nHaving/, Enum.at(fragments, 0).content)
     assert Regex.match?(~R/^-A/, Enum.at(fragments, 1).content)
