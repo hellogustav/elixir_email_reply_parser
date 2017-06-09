@@ -81,7 +81,7 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
     match_at_least_one_regex?(s, [
-        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/,
+        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
         ~r/^Diese Nachricht wurde von mein.* gesendet\.?$/,
         ~r/^Von mein.* gesendet\.?$/ ])
   end
