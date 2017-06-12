@@ -21,6 +21,7 @@ defmodule ElixirEmailReplyParser.Parser do
     |> Enum.filter(fn f -> unless (f.hidden or f.quoted), do: true end)
     |> Enum.map(fn f -> f.content end)
     |> Enum.join("\n")
+    |> String.trim_trailing()
   end
 
   @spec normalize_line_endings(String.t) :: String.t
@@ -81,7 +82,7 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
     match_at_least_one_regex?(s, [
-        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})/,
+        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
         ~r/^Diese Nachricht wurde von mein.* gesendet\.?$/,
         ~r/^Von mein.* gesendet\.?$/ ])
   end
@@ -130,7 +131,11 @@ defmodule ElixirEmailReplyParser.Parser do
   end
 
   defp consolidate_lines(fragment) do
-    %{fragment | content: String.trim(Enum.join(fragment.lines, "\n")), lines: nil}
+    content =
+      fragment.lines
+      |> Enum.join("\n")
+      |> String.trim_leading()
+    %{fragment | content: content, lines: nil}
   end
 
   defp mark_as_signature(fragment) do
