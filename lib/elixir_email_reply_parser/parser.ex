@@ -82,9 +82,10 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
     match_at_least_one_regex?(s, [
-        ~R/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
+        ~R/(^\s*--|^\s*__|^-\w)|(^Sent from my ([a-zA-Z0-9_-]+\s*){1,3})\.?$/,
         ~R/^Diese Nachricht wurde von mein.* gesendet\.?$/,
         ~R/^Von mein.* gesendet\.?$/,
+        ~R/^Gesendet von mein.* ([a-zA-Z0-9_-]+\s*){1,3}\.?$/,
         ~R"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
         ~R"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
   end
