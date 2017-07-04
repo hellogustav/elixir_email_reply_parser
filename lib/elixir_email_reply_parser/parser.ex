@@ -98,7 +98,9 @@ defmodule ElixirEmailReplyParser.Parser do
         ~r/On.*wrote:$/,
         ~r/^.+schrieb am.+um.+:$/,
         ~r/^Am.+um.+schrieb.+:$/,
-        ~r/^-{5}Ursprüngliche Nachricht-{5}$/ ])
+        ~r/^-{5}Ursprüngliche Nachricht-{5}$/,
+        ~r"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
+        ~r"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
   end
 
   @spec string_email_header?(String.t) :: boolean
