@@ -14,9 +14,8 @@ defmodule ElixirEmailReplyParser.Mixfile do
      # Docs
      name: "Elixir Email Reply Parser",
      source_url: "https://github.com/hellogustav/elixir_email_reply_parser",
-     homepage_url: "https://github.com/hellogustav/elixir_email_reply_parser",
      docs: [main: "readme",
-            extras: ["README.md"]]]
+            extras: ["README.md", "LICENSE.md"]]]
   end
 
   # Configuration for the OTP application
@@ -31,7 +30,8 @@ defmodule ElixirEmailReplyParser.Mixfile do
     """
     Email reply parser for retrieval of the last reply from email message.
     Originally an Elixir port of https://github.com/github/email_reply_parser
-    as well as its port https://github.com/zapier/email-reply-parser.
+    as well as its port https://github.com/zapier/email-reply-parser
+    enhanced by e.g. an ability to handle emails with German.
     """
   end
 
@@ -39,8 +39,7 @@ defmodule ElixirEmailReplyParser.Mixfile do
     [name: :elixir_email_reply_parser,
     maintainers: ["elixir.email.reply.parser@gmail.com"],
     licenses: ["MIT"],
-    links: %{"GitHub" => "https://github.com/hellogustav/elixir_email_reply_parser",
-             "Docs" => "https://hexdocs.pm/elixir_email_reply_parser"}]
+    links: %{"GitHub" => "https://github.com/hellogustav/elixir_email_reply_parser"}]
   end
 
   defp deps do
