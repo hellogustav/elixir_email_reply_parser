@@ -84,7 +84,9 @@ defmodule ElixirEmailReplyParser.Parser do
     match_at_least_one_regex?(s, [
         ~R/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
         ~R/^Diese Nachricht wurde von mein.* gesendet\.?$/,
-        ~R/^Von mein.* gesendet\.?$/ ])
+        ~R/^Von mein.* gesendet\.?$/,
+        ~R"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
+        ~R"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
   end
 
   @spec string_quoted?(String.t) :: boolean
@@ -98,9 +100,7 @@ defmodule ElixirEmailReplyParser.Parser do
         ~R/On.*wrote:$/,
         ~R/^.+schrieb am.+um.+:$/,
         ~R/^Am.+um.+schrieb.+:$/,
-        ~R/^-{5}Ursprüngliche Nachricht-{5}$/,
-        ~R"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
-        ~R"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
+        ~R/^-{5}Ursprüngliche Nachricht-{5}$/])
   end
 
   @spec string_email_header?(String.t) :: boolean
