@@ -34,9 +34,9 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec handle_multiline(String.t) :: String.t
   defp handle_multiline(s) do
     Enum.reduce([
-          ~r/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s,
-          ~r/(schrieb\sam\s(.+?)um\s(.+?):)/s,
-          ~r/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s ],
+          ~R/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s,
+          ~R/(schrieb\sam\s(.+?)um\s(.+?):)/s,
+          ~R/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s ],
         s,
         &remove_newlines_if_matched/2)
   end
@@ -57,7 +57,7 @@ defmodule ElixirEmailReplyParser.Parser do
   # at least two newline characters.
   @spec draw_away_lines_with_underscores(String.t) :: String.t
   defp draw_away_lines_with_underscores(s) do
-    Regex.replace(~r/([^\n])(?=\n_{7}_+)$/m, s, "\\1\n")
+    Regex.replace(~R/([^\n])(?=\n_{7}_+)$/m, s, "\\1\n")
   end
 
   # Some users may write directly above signature markers
@@ -66,7 +66,7 @@ defmodule ElixirEmailReplyParser.Parser do
   # at least two newline characters.
   @spec draw_away_signatures(String.t) :: String.t
   defp draw_away_signatures(s) do
-    Regex.replace(~r/([^\n])(?=\n-{2,}\s*\n)$/m, s, "\\1\n")
+    Regex.replace(~R/([^\n])(?=\n-{2,}\s*\n)$/m, s, "\\1\n")
   end
 
   @spec string_empty?(String.t) :: boolean
@@ -82,32 +82,32 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec string_signature?(String.t) :: boolean
   defp string_signature?(s) do
     match_at_least_one_regex?(s, [
-        ~r/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
-        ~r/^Diese Nachricht wurde von mein.* gesendet\.?$/,
-        ~r/^Von mein.* gesendet\.?$/ ])
+        ~R/(^\s*--|^\s*__|^-\w)|(^Sent from my (\w+\s*){1,3})\.?$/,
+        ~R/^Diese Nachricht wurde von mein.* gesendet\.?$/,
+        ~R/^Von mein.* gesendet\.?$/ ])
   end
 
   @spec string_quoted?(String.t) :: boolean
   defp string_quoted?(s) do
-    Regex.match?(~r/^ *(>+)/, s)
+    Regex.match?(~R/^ *(>+)/, s)
   end
 
   @spec string_quote_header?(String.t) :: boolean
   defp string_quote_header?(s) do
     match_at_least_one_regex?(s, [
-        ~r/On.*wrote:$/,
-        ~r/^.+schrieb am.+um.+:$/,
-        ~r/^Am.+um.+schrieb.+:$/,
-        ~r/^-{5}Ursprüngliche Nachricht-{5}$/,
-        ~r"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
-        ~r"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
+        ~R/On.*wrote:$/,
+        ~R/^.+schrieb am.+um.+:$/,
+        ~R/^Am.+um.+schrieb.+:$/,
+        ~R/^-{5}Ursprüngliche Nachricht-{5}$/,
+        ~R"^Get Outlook for (iOS|Android) <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$",
+        ~R"^Outlook für (iOS|Android) beziehen <https?://[a-z0-9.-]+[a-zA-Z0-9/.,_:;#?%!@$&'()*+~=-]*>$"])
   end
 
   @spec string_email_header?(String.t) :: boolean
   defp string_email_header?(s) do
     match_at_least_one_regex?(s, [
-        ~r/^\*?(From|Sent|To|Subject):\*? .+/,
-        ~r/^\*?(Von|Gesendet|An|Betreff):\*? .+/ ])
+        ~R/^\*?(From|Sent|To|Subject):\*? .+/,
+        ~R/^\*?(Von|Gesendet|An|Betreff):\*? .+/ ])
   end
 
   defp scan_line({nil, fragments, _found_visible}, []) do
