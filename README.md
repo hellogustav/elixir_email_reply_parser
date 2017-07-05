@@ -1,4 +1,4 @@
-# ElixirEmailReplyParser
+# Elixir Email Reply Parser
 
 [![Build Status](https://travis-ci.org/hellogustav/elixir_email_reply_parser.svg?branch=master)](https://travis-ci.org/hellogustav/elixir_email_reply_parser)
 
@@ -18,8 +18,6 @@ def deps do
 end
 ```
 
-Published version of the docs can be found at [https://hexdocs.pm/elixir_email_reply_parser](https://hexdocs.pm/elixir_email_reply_parser).
-
 ## Usage
 
 ```elixir
@@ -27,3 +25,13 @@ Published version of the docs can be found at [https://hexdocs.pm/elixir_email_r
     iex> ElixirEmailReplyParser.parse_reply(email_content)
     "Hi!\n\n How are you?"
 ```
+
+## Links
+
+Source code can be found at [https://github.com/hellogustav/elixir_email_reply_parser](https://github.com/hellogustav/elixir_email_reply_parser)
+
+Package info can be found at [https://hex.pm/packages/elixir_email_reply_parser](https://hex.pm/packages/elixir_email_reply_parser)
+
+Published version of the docs can be found at [https://hexdocs.pm/elixir_email_reply_parser](https://hexdocs.pm/elixir_email_reply_parser).
+
+Licensed under the [MIT license](https://github.com/hellogustav/elixir_email_reply_parser/blob/master/LICENSE.md)

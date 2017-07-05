@@ -230,6 +230,12 @@ defmodule ElixirEmailReplyParserTest do
     assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
   end
 
+  test "german_footer_4" do
+    content = get_email_content("de/german_footer_4")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nLG, Eva"
+  end
+
   test "german_headers" do
     content = get_email_content("de/german_headers")
 
@@ -246,6 +252,18 @@ defmodule ElixirEmailReplyParserTest do
     content = get_email_content("de/german2_multiline")
 
     assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
+
+  test "get_outlook" do
+    content = get_email_content("get_outlook")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "I am fine, thanks.\n\nJohn."
+  end
+
+  test "german_get_outlook" do
+    content = get_email_content("de/german_get_outlook")
+
+    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nLG, Eva"
   end
 
   test "ruby_test_reads_simple_body" do
