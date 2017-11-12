@@ -425,6 +425,11 @@ I am currently using the Java HTTP API.\n"
     assert ElixirEmailReplyParser.parse_reply(body) == "test 2 this should list second\n\nand have spaces\n\nand retain this formatting\n\n\n   - how about bullets\n   - and another"
   end
 
+  test "consecutive emails flowed formatted" do
+    body = get_email_content("consecutive_emails_flowed_formatted")
+    assert ElixirEmailReplyParser.parse_reply(body) == "another response"
+  end
+
   test "ruby_test_one_is_not_on" do
     email_message = get_email('email_one_is_not_on')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
