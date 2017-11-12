@@ -34,9 +34,9 @@ defmodule ElixirEmailReplyParser.Parser do
   @spec handle_multiline(String.t) :: String.t
   defp handle_multiline(s) do
     Enum.reduce([
-          ~R/(?!On.*On\s.+?wrote:)(On\s(.+?)wrote:)/s,
+          ~R/(On(?:(?!On|wrote:)(.|\s))*?wrote:)/s,
           ~R/(schrieb\sam\s(.+?)um\s(.+?):)/s,
-          ~R/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s ],
+          ~R/(Am\s(.+?)um\s(.+?)schrieb\s(.+?):)/s],
         s,
         &remove_newlines_if_matched/2)
   end
