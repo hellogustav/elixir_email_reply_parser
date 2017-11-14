@@ -14,7 +14,7 @@ The package can be installed by adding `elixir_email_reply_parser` to your list 
 
 ```elixir
 def deps do
-  [{:elixir_email_reply_parser, "~> 0.1.1"}]
+  [{:elixir_email_reply_parser, "~> 0.1.2"}]
 end
 ```
 

@@ -3,7 +3,7 @@ defmodule ElixirEmailReplyParser.Mixfile do
 
   def project do
     [app: :elixir_email_reply_parser,
-     version: "0.1.1",
+     version: "0.1.2",
      description: description(),
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
