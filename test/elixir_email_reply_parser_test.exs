@@ -387,7 +387,14 @@ I am currently using the Java HTTP API.\n"
     email_message = get_email('email_1_2')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert ElixirEmailReplyParser.Parser.reply(email_message) == fragments |> Enum.filter_map(&(!(&1.hidden || &1.quoted)), &(&1.content)) |> Enum.join("\n") |> String.trim_trailing()
+    expected =
+      fragments
+      |> Enum.filter(&(!(&1.hidden || &1.quoted)))
+      |> Enum.map(&(&1.content))
+      |> Enum.join("\n")
+      |> String.trim_trailing()
+
+    assert ElixirEmailReplyParser.Parser.reply(email_message) == expected
   end
 
   test "ruby_test_parse_out_just_top_for_outlook_reply" do
