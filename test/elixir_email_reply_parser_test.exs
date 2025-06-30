@@ -292,10 +292,10 @@ I am currently using the Java HTTP API.\n"
     assert (for fragment <- fragments, do: fragment.signature) == [false, true, false, false, true]
     assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true, true, true]
 
-    assert Regex.match?(~R/^Oh thanks.\n\nHaving/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^-A/, Enum.at(fragments, 1).content)
-    assert Regex.match?(~R/^On [^\:]+\:/, Enum.at(fragments, 2).content)
-    assert Regex.match?(~R/^_/, Enum.at(fragments, 4).content)
+    assert Regex.match?(~r/^Oh thanks.\n\nHaving/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^-A/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^On [^\:]+\:/, Enum.at(fragments, 2).content)
+    assert Regex.match?(~r/^_/, Enum.at(fragments, 4).content)
   end
 
   test "ruby_test_reads_bottom_post" do
@@ -308,10 +308,10 @@ I am currently using the Java HTTP API.\n"
     assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, true, true, true]
 
     assert Enum.at(fragments, 0).content ==  "Hi,"
-    assert Regex.match?(~R/^On [^\:]+\:/, Enum.at(fragments, 1).content)
-    assert Regex.match?(~R/^You can list/, Enum.at(fragments, 2).content)
-    assert Regex.match?(~R/^> /, Enum.at(fragments, 3).content)
-    assert Regex.match?(~R/^_/, Enum.at(fragments, 5).content)
+    assert Regex.match?(~r/^On [^\:]+\:/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^You can list/, Enum.at(fragments, 2).content)
+    assert Regex.match?(~r/^> /, Enum.at(fragments, 3).content)
+    assert Regex.match?(~r/^_/, Enum.at(fragments, 5).content)
   end
 
   test "modified_ruby_test_reads_inline_replies" do
@@ -323,11 +323,11 @@ I am currently using the Java HTTP API.\n"
     assert (for fragment <- fragments, do: fragment.signature) == [false, false, false, false, false, false, true]
     assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, false, true, true, true]
 
-    assert Regex.match?(~R/^On [^\:]+\:/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^I will reply/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^On [^\:]+\:/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^I will reply/, Enum.at(fragments, 1).content)
     assert String.contains?(Enum.at(fragments, 2).content, "okay?")
-    assert Regex.match?(~R/^and under this./, Enum.at(fragments, 3).content)
-    assert Regex.match?(~R/inline/, Enum.at(fragments, 4).content)
+    assert Regex.match?(~r/^and under this./, Enum.at(fragments, 3).content)
+    assert Regex.match?(~r/inline/, Enum.at(fragments, 4).content)
     assert Enum.at(fragments, 5).content == ""
     assert Enum.at(fragments, 6).content == "--\nHey there, this is my signature\n"
   end
@@ -336,9 +336,9 @@ I am currently using the Java HTTP API.\n"
     email_message = get_email('email_1_4')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert Regex.match?(~R/^Awesome/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^On/, Enum.at(fragments, 1).content)
-    assert Regex.match?(~R/Loader/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^Awesome/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/Loader/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_a_complex_body_with_only_one_fragment" do
@@ -356,25 +356,25 @@ I am currently using the Java HTTP API.\n"
     assert (for fragment <- fragments, do: fragment.signature) == [false, true]
     assert (for fragment <- fragments, do: fragment.hidden) == [false, true]
 
-    assert Regex.match?(~R/^-- \nrick/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^-- \nrick/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_deals_with_multiline_reply_headers" do
     email_message = get_email('email_1_6')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert Regex.match?(~R/^I get/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^On/, Enum.at(fragments, 1).content)
-    assert Regex.match?(~R/Was this/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^I get/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/Was this/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_deals_with_windows_line_endings" do
     email_message = get_email('email_1_7')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert Regex.match?(~R/:\+1:/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^On/, Enum.at(fragments, 1).content)
-    assert Regex.match?(~R/Steps 0-2/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/:\+1:/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/Steps 0-2/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_handles_non_ascii_characters" do
@@ -441,8 +441,8 @@ I am currently using the Java HTTP API.\n"
     email_message = get_email('email_one_is_not_on')
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert Regex.match?(~R/One outstanding question/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^On Oct 1, 2012/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/One outstanding question/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On Oct 1, 2012/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_multiple_on" do
@@ -453,8 +453,8 @@ I am currently using the Java HTTP API.\n"
     assert (for fragment <- fragments, do: fragment.signature) == [false, false, false]
     assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true]
 
-    assert Regex.match?(~R/^On your remote host/, Enum.at(fragments, 0).content)
-    assert Regex.match?(~R/^On 9 Jan 2014/, Enum.at(fragments, 1).content)
+    assert Regex.match?(~r/^On your remote host/, Enum.at(fragments, 0).content)
+    assert Regex.match?(~r/^On 9 Jan 2014/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_doesnt_remove_signature_delimiter_in_mid_line" do
