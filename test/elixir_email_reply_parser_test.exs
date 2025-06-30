@@ -3,111 +3,163 @@ defmodule ElixirEmailReplyParserTest do
   doctest ElixirEmailReplyParser
 
   test "test_simple_body" do
-    email_message = get_email('email_1_1')
+    email_message = get_email(~c"email_1_1")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 3
     for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
 
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true, true]
 
-    assert String.contains?(Enum.at(fragments, 0).content, "folks" )
+    assert String.contains?(Enum.at(fragments, 0).content, "folks")
     assert String.contains?(Enum.at(fragments, 2).content, "riak-users")
   end
 
   test "test_reads_bottom_message" do
-    email_message = get_email('email_1_2')
+    email_message = get_email(~c"email_1_2")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 6
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, true, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false, false, false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, true, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [
+             false,
+             true,
+             false,
+             true,
+             false,
+             false
+           ]
 
-    assert String.contains?(Enum.at(fragments, 0).content, "Hi" )
-    assert String.contains?(Enum.at(fragments, 1).content, "On" )
-    assert String.contains?(Enum.at(fragments, 3).content, ">" )
+    assert for(fragment <- fragments, do: fragment.signature) == [
+             false,
+             false,
+             false,
+             false,
+             false,
+             true
+           ]
+
+    assert for(fragment <- fragments, do: fragment.hidden) == [
+             false,
+             false,
+             false,
+             true,
+             true,
+             true
+           ]
+
+    assert String.contains?(Enum.at(fragments, 0).content, "Hi")
+    assert String.contains?(Enum.at(fragments, 1).content, "On")
+    assert String.contains?(Enum.at(fragments, 3).content, ">")
     assert String.contains?(Enum.at(fragments, 5).content, "riak-users")
   end
 
   test "test_reads_inline_replies" do
-    email_message = get_email('email_1_8')
+    email_message = get_email(~c"email_1_8")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 7
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [true, false, true, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false, false, false, false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, false, true, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [
+             true,
+             false,
+             true,
+             false,
+             true,
+             false,
+             false
+           ]
+
+    assert for(fragment <- fragments, do: fragment.signature) == [
+             false,
+             false,
+             false,
+             false,
+             false,
+             false,
+             true
+           ]
+
+    assert for(fragment <- fragments, do: fragment.hidden) == [
+             false,
+             false,
+             false,
+             false,
+             true,
+             true,
+             true
+           ]
   end
 
   test "test_reads_top_post" do
-    email_message = get_email('email_1_3')
+    email_message = get_email(~c"email_1_3")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 5
   end
 
   test "test_multiline_reply_headers" do
-    email_message = get_email('email_1_6')
+    email_message = get_email(~c"email_1_6")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert String.contains?(Enum.at(fragments, 0).content, "I get" )
-    assert String.contains?(Enum.at(fragments, 1).content, "On" )
+    assert String.contains?(Enum.at(fragments, 0).content, "I get")
+    assert String.contains?(Enum.at(fragments, 1).content, "On")
   end
 
   test "test_captures_date_string" do
-    email_message = get_email('email_1_4')
+    email_message = get_email(~c"email_1_4")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert String.contains?(Enum.at(fragments, 0).content, "Awesome" )
-    assert String.contains?(Enum.at(fragments, 1).content, "On" )
-    assert String.contains?(Enum.at(fragments, 1).content, "Loader" )
+    assert String.contains?(Enum.at(fragments, 0).content, "Awesome")
+    assert String.contains?(Enum.at(fragments, 1).content, "On")
+    assert String.contains?(Enum.at(fragments, 1).content, "Loader")
   end
 
   test "test_complex_body_with_one_fragment" do
-    email_message = get_email('email_1_5')
+    email_message = get_email(~c"email_1_5")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 1
   end
 
   test "test_verify_reads_signature_correct" do
-    email_message = get_email('correct_sig')
+    email_message = get_email(~c"correct_sig")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 2
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, true]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true]
 
-    assert String.contains?(Enum.at(fragments, 1).content, "--" )
+    assert String.contains?(Enum.at(fragments, 1).content, "--")
   end
 
   test "test_deals_with_windows_line_endings" do
-    email_message = get_email('email_1_7')
+    email_message = get_email(~c"email_1_7")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert String.contains?(Enum.at(fragments, 0).content, ":+1:" )
-    assert String.contains?(Enum.at(fragments, 1).content, "On" )
-    assert String.contains?(Enum.at(fragments, 1).content, "Steps 0-2" )
+    assert String.contains?(Enum.at(fragments, 0).content, ":+1:")
+    assert String.contains?(Enum.at(fragments, 1).content, "On")
+    assert String.contains?(Enum.at(fragments, 1).content, "Steps 0-2")
   end
 
   test "test_parser_read" do
-    content = get_email_content('email_1_2')
+    content = get_email_content(~c"email_1_2")
 
     email_message = ElixirEmailReplyParser.Parser.read(content)
 
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
 
-    assert String.contains?(ElixirEmailReplyParser.Parser.reply(email_message), "You can list the keys for the bucket")
+    assert String.contains?(
+             ElixirEmailReplyParser.Parser.reply(email_message),
+             "You can list the keys for the bucket"
+           )
   end
 
   test "test_parser_reply" do
-    email_message = get_email('email_1_2')
+    email_message = get_email(~c"email_1_2")
 
     reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
 
@@ -116,47 +168,52 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   test "test_reply_from_gmail" do
-    content = get_email_content('email_gmail')
+    content = get_email_content(~c"email_gmail")
 
-    assert ElixirEmailReplyParser.parse_reply(content) == "This is a test for inbox replying to a github message."
+    assert ElixirEmailReplyParser.parse_reply(content) ==
+             "This is a test for inbox replying to a github message."
   end
 
   test "test_parse_out_just_top_for_outlook_reply" do
-    content = get_email_content('email_2_1')
+    content = get_email_content(~c"email_2_1")
 
     assert ElixirEmailReplyParser.parse_reply(content) == "Outlook with a reply"
   end
 
   test "test_parse_out_just_top_for_outlook_with_reply_directly_above_line" do
-    content = get_email_content('email_2_2')
+    content = get_email_content(~c"email_2_2")
 
-    assert ElixirEmailReplyParser.parse_reply(content) == "Outlook with a reply directly above line"
+    assert ElixirEmailReplyParser.parse_reply(content) ==
+             "Outlook with a reply directly above line"
   end
 
   test "test_sent_from_iphone" do
-    content = get_email_content('email_iPhone')
+    content = get_email_content(~c"email_iPhone")
 
     refute String.contains?(ElixirEmailReplyParser.parse_reply(content), "Sent from my iPhone")
   end
 
   test "test_email_one_is_not_on" do
-    content = get_email_content('email_one_is_not_on')
+    content = get_email_content(~c"email_one_is_not_on")
 
-    refute String.contains?(ElixirEmailReplyParser.parse_reply(content), "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:")
+    refute String.contains?(
+             ElixirEmailReplyParser.parse_reply(content),
+             "On Oct 1, 2012, at 11:55 PM, Dave Tapley wrote:"
+           )
   end
 
   test "test_partial_quote_header" do
-    content = get_email_content('email_partial_quote_header')
+    content = get_email_content(~c"email_partial_quote_header")
     email_message = ElixirEmailReplyParser.Parser.read(content)
     reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
 
-    assert String.contains?(reply_text, "On your remote host you can run:" )
+    assert String.contains?(reply_text, "On your remote host you can run:")
     assert String.contains?(reply_text, "telnet 127.0.0.1 52698")
     assert String.contains?(reply_text, "This should connect to TextMate")
   end
 
   test "test_email_headers_no_delimiter" do
-    content = get_email_content('email_headers_no_delimiter')
+    content = get_email_content(~c"email_headers_no_delimiter")
     email_message = ElixirEmailReplyParser.Parser.read(content)
     reply_text = ElixirEmailReplyParser.Parser.reply(email_message)
 
@@ -164,31 +221,31 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   test "test_multiple_on" do
-    email_message = get_email('greedy_on')
+    email_message = get_email(~c"greedy_on")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 3
     assert Regex.match?(~r/^On your remote host/, Enum.at(fragments, 0).content)
     assert Regex.match?(~r/^On 9 Jan 2014/, Enum.at(fragments, 1).content)
 
-
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, true, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, true, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, false, false]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true, true]
   end
 
   test "test_pathological_emails" do
-    content = get_email_content('pathological')
+    content = get_email_content(~c"pathological")
 
     {computation_time, reply_text} = :timer.tc(&ElixirEmailReplyParser.parse_reply/1, [content])
 
-    assert(computation_time < 1000000, "Took too long")
+    assert(computation_time < 1_000_000, "Took too long")
 
-    assert reply_text == "I think you're onto something. I will try to fix the problem as soon as I\nget back to a computer."
+    assert reply_text ==
+             "I think you're onto something. I will try to fix the problem as soon as I\nget back to a computer."
   end
 
   test "test_doesnt_remove_signature_delimiter_in_mid_line" do
-    email_message = get_email('email_sig_delimiter_in_middle_of_line')
+    email_message = get_email(~c"email_sig_delimiter_in_middle_of_line")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 1
@@ -207,15 +264,16 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   test "german_reply_3" do
-      content = get_email_content("de/german3")
+    content = get_email_content("de/german3")
 
-      assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
-    end
+    assert ElixirEmailReplyParser.parse_reply(content) == "Danke, Adam\n\nMir geht es gut.\n\nEva"
+  end
 
   test "german_footer_1" do
     content = get_email_content("de/german_footer_1")
 
-    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
+    assert ElixirEmailReplyParser.parse_reply(content) ==
+             "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
   end
 
   test "german_footer_2" do
@@ -239,7 +297,8 @@ defmodule ElixirEmailReplyParserTest do
   test "german_headers" do
     content = get_email_content("de/german_headers")
 
-    assert ElixirEmailReplyParser.parse_reply(content) == "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
+    assert ElixirEmailReplyParser.parse_reply(content) ==
+             "Hallo Adam\n\nGut, und dir?\n\nEva\n\nMag. Eva Musterfrau\nA-1000 Wien, Grüngasse 1\nTel: +44-7700-900333"
   end
 
   test "german_reply_1_multiline_header" do
@@ -267,14 +326,14 @@ defmodule ElixirEmailReplyParserTest do
   end
 
   test "ruby_test_reads_simple_body" do
-    email_message = get_email('email_1_1')
+    email_message = get_email(~c"email_1_1")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 3
     for fragment <- fragments, do: %ElixirEmailReplyParser.Fragment{} = fragment
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, false, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true, true]
 
     assert Enum.at(fragments, 0).content == "Hi folks
 
@@ -284,13 +343,13 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_reads_top_post" do
-    email_message = get_email('email_1_3')
+    email_message = get_email(~c"email_1_3")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 5
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true, false, false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, false, true, false, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, true, false, false, true]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true, true, true, true]
 
     assert Regex.match?(~r/^Oh thanks.\n\nHaving/, Enum.at(fragments, 0).content)
     assert Regex.match?(~r/^-A/, Enum.at(fragments, 1).content)
@@ -299,15 +358,38 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_reads_bottom_post" do
-    email_message = get_email('email_1_2')
+    email_message = get_email(~c"email_1_2")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 6
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, true, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false, false, false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, true, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [
+             false,
+             true,
+             false,
+             true,
+             false,
+             false
+           ]
 
-    assert Enum.at(fragments, 0).content ==  "Hi,"
+    assert for(fragment <- fragments, do: fragment.signature) == [
+             false,
+             false,
+             false,
+             false,
+             false,
+             true
+           ]
+
+    assert for(fragment <- fragments, do: fragment.hidden) == [
+             false,
+             false,
+             false,
+             true,
+             true,
+             true
+           ]
+
+    assert Enum.at(fragments, 0).content == "Hi,"
     assert Regex.match?(~r/^On [^\:]+\:/, Enum.at(fragments, 1).content)
     assert Regex.match?(~r/^You can list/, Enum.at(fragments, 2).content)
     assert Regex.match?(~r/^> /, Enum.at(fragments, 3).content)
@@ -315,13 +397,39 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "modified_ruby_test_reads_inline_replies" do
-    email_message = get_email('email_1_8')
+    email_message = get_email(~c"email_1_8")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 7
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [true, false, true, false, true, false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false, false, false, false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, false, false, false, true, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [
+             true,
+             false,
+             true,
+             false,
+             true,
+             false,
+             false
+           ]
+
+    assert for(fragment <- fragments, do: fragment.signature) == [
+             false,
+             false,
+             false,
+             false,
+             false,
+             false,
+             true
+           ]
+
+    assert for(fragment <- fragments, do: fragment.hidden) == [
+             false,
+             false,
+             false,
+             false,
+             true,
+             true,
+             true
+           ]
 
     assert Regex.match?(~r/^On [^\:]+\:/, Enum.at(fragments, 0).content)
     assert Regex.match?(~r/^I will reply/, Enum.at(fragments, 1).content)
@@ -333,7 +441,7 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_recognizes_date_string_above_quote" do
-    email_message = get_email('email_1_4')
+    email_message = get_email(~c"email_1_4")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert Regex.match?(~r/^Awesome/, Enum.at(fragments, 0).content)
@@ -342,25 +450,25 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_a_complex_body_with_only_one_fragment" do
-    email_message = get_email('email_1_5')
+    email_message = get_email(~c"email_1_5")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 1
   end
 
   test "ruby_test_reads_email_with_correct_signature" do
-    email_message = get_email('correct_sig')
+    email_message = get_email(~c"correct_sig")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
     assert length(fragments) == 2
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, true]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, true]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true]
 
     assert Regex.match?(~r/^-- \nrick/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_deals_with_multiline_reply_headers" do
-    email_message = get_email('email_1_6')
+    email_message = get_email(~c"email_1_6")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert Regex.match?(~r/^I get/, Enum.at(fragments, 0).content)
@@ -369,7 +477,7 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_deals_with_windows_line_endings" do
-    email_message = get_email('email_1_7')
+    email_message = get_email(~c"email_1_7")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert Regex.match?(~r/:\+1:/, Enum.at(fragments, 0).content)
@@ -384,13 +492,13 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "modified_ruby_test_returns_only_the_visible_fragments_as_a_string" do
-    email_message = get_email('email_1_2')
+    email_message = get_email(~c"email_1_2")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     expected =
       fragments
       |> Enum.filter(&(!(&1.hidden || &1.quoted)))
-      |> Enum.map(&(&1.content))
+      |> Enum.map(& &1.content)
       |> Enum.join("\n")
       |> String.trim_trailing()
 
@@ -424,12 +532,16 @@ I am currently using the Java HTTP API.\n"
 
   test "ruby_test_do_not_parse_out_send_from_in_regular_sentence" do
     body = get_email_content("email_sent_from_my_not_signature")
-    assert ElixirEmailReplyParser.parse_reply(body) == "Here is another email\n\nSent from my desk, is much easier then my mobile phone."
+
+    assert ElixirEmailReplyParser.parse_reply(body) ==
+             "Here is another email\n\nSent from my desk, is much easier then my mobile phone."
   end
 
   test "ruby_test_retains_bullets" do
     body = get_email_content("email_bullets")
-    assert ElixirEmailReplyParser.parse_reply(body) == "test 2 this should list second\n\nand have spaces\n\nand retain this formatting\n\n\n   - how about bullets\n   - and another"
+
+    assert ElixirEmailReplyParser.parse_reply(body) ==
+             "test 2 this should list second\n\nand have spaces\n\nand retain this formatting\n\n\n   - how about bullets\n   - and another"
   end
 
   test "consecutive emails flowed formatted" do
@@ -438,7 +550,7 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_one_is_not_on" do
-    email_message = get_email('email_one_is_not_on')
+    email_message = get_email(~c"email_one_is_not_on")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert Regex.match?(~r/One outstanding question/, Enum.at(fragments, 0).content)
@@ -446,19 +558,19 @@ I am currently using the Java HTTP API.\n"
   end
 
   test "ruby_test_multiple_on" do
-    email_message = get_email('greedy_on')
+    email_message = get_email(~c"greedy_on")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
-    assert (for fragment <- fragments, do: fragment.quoted) == [false, true, false]
-    assert (for fragment <- fragments, do: fragment.signature) == [false, false, false]
-    assert (for fragment <- fragments, do: fragment.hidden) == [false, true, true]
+    assert for(fragment <- fragments, do: fragment.quoted) == [false, true, false]
+    assert for(fragment <- fragments, do: fragment.signature) == [false, false, false]
+    assert for(fragment <- fragments, do: fragment.hidden) == [false, true, true]
 
     assert Regex.match?(~r/^On your remote host/, Enum.at(fragments, 0).content)
     assert Regex.match?(~r/^On 9 Jan 2014/, Enum.at(fragments, 1).content)
   end
 
   test "ruby_test_doesnt_remove_signature_delimiter_in_mid_line" do
-    email_message = get_email('email_sig_delimiter_in_middle_of_line')
+    email_message = get_email(~c"email_sig_delimiter_in_middle_of_line")
     %ElixirEmailReplyParser.EmailMessage{fragments: fragments} = email_message
 
     assert length(fragments) == 1
@@ -472,5 +584,4 @@ I am currently using the Java HTTP API.\n"
   defp get_email(name) do
     ElixirEmailReplyParser.read(get_email_content(name))
   end
-
 end
