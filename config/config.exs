@@ -1,6 +1,7 @@
 # This file is responsible for configuring your application
-# and its dependencies with the aid of the Mix.Config module.
-use Mix.Config
+# and its dependencies.  It is evaluated by Mix at compile time.
+# See: https://hexdocs.pm/elixir/Config.html
+import Config
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
