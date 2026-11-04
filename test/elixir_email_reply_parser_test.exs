@@ -464,6 +464,14 @@ I am currently using the Java HTTP API.\n"
     assert length(fragments) == 1
   end
 
+  test "a header after a long whitespace run and another \"On\" does not hit the regex match limit" do
+    body =
+      "Hi\nOn" <> String.duplicate(" ", 1000) <> "On\n" <> String.duplicate("\n \t", 1000) <>
+        " wrote:\n> quoted"
+
+    assert ElixirEmailReplyParser.parse_reply(body) =~ "Hi"
+  end
+
   defp get_email_content(name) do
     {:ok, content} = File.read("test/emails/#{name}.txt")
     content
